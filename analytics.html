@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Jal Sanjivani</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <h1>Jal Sanjivani</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">Alerts</a></li>
+                <li><a href="#" class="nav-link">Water Points</a></li>
+                <li><a href="analytics.html" class="nav-link active">Analytics</a></li>
+                <li><a href="#" class="nav-link">Login</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="analytics-header">
+            <h1 class="gaga">Health Analytics Dashboard</h1>
+            <p class="mumu">Data-driven insights for better health monitoring</p>
+        </div>
+
+        <div class="analytics-container">
+            <div class="chart-section">
+                <div class="chart-card">
+                    <h3>Monthly Case Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="monthlyCasesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Disease Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="diseaseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-card">
+                    <h3>Water Quality Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="waterQualityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Risk Level Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="riskLevelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section full-width">
+                <div class="chart-card">
+                    <h3>Cases by Location</h3>
+                    <div class="chart-container">
+                        <canvas id="locationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h4 id="totalCases">0</h4>
+                        <p>Total Cases</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💧</div>
+                    <div class="stat-content">
+                        <h4 id="waterTests">0</h4>
+                        <p>Water Tests</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-content">
+                        <h4 id="activeAlerts">0</h4>
+                        <p>Active Alerts</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h4 id="volunteers">0</h4>
+                        <p>Volunteers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insights-section">
+                <h3>Key Insights</h3>
+                <div class="insights-grid" id="insightsContainer">
+                    <!-- Insights will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Jal Sanjivani</h3>
+                <p>Community Health Monitoring System for Northeast India</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Volunteer</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> contact@jalsanjivani.org</p>
+                <p><i class="fas fa-phone"></i> +91 **********</p>
+                <p><i class="fas fa-map-marker-alt"></i> Guwahati, Assam, India</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Jal Sanjivani. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="analytics.js"></script>
+</body>
+</html>
