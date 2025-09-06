@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Export - Jal Sanjivani</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .reports-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .report-section h3 {
+            color: #1b5e20;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .export-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .export-card:hover {
+            border-color: #1b5e20;
+            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.1);
+        }
+        
+        .export-card h4 {
+            color: #1b5e20;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .export-card p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            background: #1b5e20;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .export-btn:hover {
+            background: #2e7d32;
+        }
+        
+        .export-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .export-btn.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .date-range {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .date-input {
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+        
+        .template-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .template-section h4 {
+            color: #1b5e20;
+            margin-bottom: 1rem;
+        }
+        
+        .template-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .template-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .template-item h5 {
+            color: #1b5e20;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .download-template-btn {
+            background: #17a2b8;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+        }
+        
+        .download-template-btn:hover {
+            background: #138496;
+        }
+        
+        .report-preview {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .preview-table th,
+        .preview-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .preview-table th {
+            background: #e9ecef;
+            font-weight: 600;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <h1>Jal Sanjivani</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="data-forms.html" class="nav-link">Data Input</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="reports.html" class="nav-link active">Reports</a></li>
+                <li><a href="#" class="nav-link">Alerts</a></li>
+                <li><a href="#" class="nav-link">Water Points</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="reports-container">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: #1b5e20;">
+            <i class="fas fa-file-export"></i> Reports & Data Export
+        </h2>
+        
+        <!-- Date Range Selection -->
+        <div class="report-section">
+            <h3><i class="fas fa-calendar-alt"></i> Date Range Selection</h3>
+            <div class="date-range">
+                <div>
+                    <label for="start-date" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Start Date:</label>
+                    <input type="date" id="start-date" class="date-input">
+                </div>
+                <div>
+                    <label for="end-date" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">End Date:</label>
+                    <input type="date" id="end-date" class="date-input">
+                </div>
+                <div style="align-self: end;">
+                    <button class="export-btn" onclick="setDateRange('7')">Last 7 days</button>
+                    <button class="export-btn" onclick="setDateRange('30')">Last 30 days</button>
+                    <button class="export-btn" onclick="setDateRange('90')">Last 90 days</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="report-section">
+            <h3><i class="fas fa-download"></i> Export Data</h3>
+            <div class="export-options">
+                <!-- Cases Export -->
+                <div class="export-card">
+                    <h4><i class="fas fa-user-injured"></i> Case Reports</h4>
+                    <p>Export all case reports with details including village, case type, severity, symptoms, and patient information.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="exportData('cases', 'csv')">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="export-btn secondary" onclick="exportData('cases', 'json')">
+                            <i class="fas fa-file-code"></i> JSON
+                        </button>
+                        <button class="export-btn secondary" onclick="previewData('cases')">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Water Quality Export -->
+                <div class="export-card">
+                    <h4><i class="fas fa-tint"></i> Water Quality Data</h4>
+                    <p>Export water quality test results including pH levels, bacteria counts, chlorine levels, and contamination status.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="exportData('water-quality', 'csv')">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="export-btn secondary" onclick="exportData('water-quality', 'json')">
+                            <i class="fas fa-file-code"></i> JSON
+                        </button>
+                        <button class="export-btn secondary" onclick="previewData('water-quality')">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Volunteers Export -->
+                <div class="export-card">
+                    <h4><i class="fas fa-hands-helping"></i> Volunteer Data</h4>
+                    <p>Export volunteer information including contact details, skills, and village assignments.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="exportVolunteers()">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="export-btn secondary" onclick="previewVolunteers()">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alerts Export -->
+                <div class="export-card">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Alert History</h4>
+                    <p>Export all alerts and notifications including case alerts, water contamination alerts, and system notifications.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="exportAlerts()">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="export-btn secondary" onclick="previewAlerts()">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CSV Templates -->
+        <div class="report-section">
+            <h3><i class="fas fa-file-upload"></i> CSV Templates for Bulk Upload</h3>
+            <div class="template-section">
+                <p>Download CSV templates to ensure proper formatting when uploading data in bulk.</p>
+                <div class="template-list">
+                    <div class="template-item">
+                        <h5>Case Reports Template</h5>
+                        <p>Template for uploading multiple case reports</p>
+                        <button class="download-template-btn" onclick="downloadTemplate('cases')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                    <div class="template-item">
+                        <h5>Water Quality Template</h5>
+                        <p>Template for uploading water quality test results</p>
+                        <button class="download-template-btn" onclick="downloadTemplate('water-quality')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Preview -->
+        <div class="report-section" id="preview-section" style="display: none;">
+            <h3><i class="fas fa-eye"></i> Data Preview</h3>
+            <div class="success-message" id="preview-success"></div>
+            <div class="error-message" id="preview-error"></div>
+            <div id="preview-content">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i> Loading preview...
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Reports -->
+        <div class="report-section">
+            <h3><i class="fas fa-chart-bar"></i> Summary Reports</h3>
+            <div class="export-options">
+                <div class="export-card">
+                    <h4><i class="fas fa-chart-line"></i> Weekly Summary</h4>
+                    <p>Generate a comprehensive weekly report with case trends, water quality status, and key metrics.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="generateSummaryReport('weekly')">
+                            <i class="fas fa-file-pdf"></i> Generate PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="export-card">
+                    <h4><i class="fas fa-chart-area"></i> Monthly Summary</h4>
+                    <p>Generate a detailed monthly report with analytics, trends, and recommendations.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="generateSummaryReport('monthly')">
+                            <i class="fas fa-file-pdf"></i> Generate PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="export-card">
+                    <h4><i class="fas fa-map-marker-alt"></i> Village-wise Report</h4>
+                    <p>Generate reports for specific villages with localized data and recommendations.</p>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="generateVillageReport()">
+                            <i class="fas fa-file-pdf"></i> Generate PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default date range
+        document.addEventListener('DOMContentLoaded', function() {
+            setDateRange('30');
+        });
+
+        function setDateRange(days) {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - parseInt(days));
+            
+            document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+            document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+        }
+
+        async function exportData(type, format) {
+            try {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+                
+                let url = `/api/export/${type}?format=${format}`;
+                if (startDate && endDate) {
+                    url += `&start_date=${startDate}&end_date=${endDate}`;
+                }
+                
+                const response = await fetch(url);
+                
+                if (format === 'csv') {
+                    const blob = await response.blob();
+                    downloadFile(blob, `${type}_export.csv`, 'text/csv');
+                } else {
+                    const data = await response.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    downloadFile(blob, `${type}_export.json`, 'application/json');
+                }
+                
+                showSuccess(`Data exported successfully as ${format.toUpperCase()}`);
+            } catch (error) {
+                console.error('Export error:', error);
+                showError('Error exporting data. Please try again.');
+            }
+        }
+
+        async function exportVolunteers() {
+            try {
+                const response = await fetch('/api/volunteers');
+                const data = await response.json();
+                
+                // Convert to CSV
+                const csvContent = convertToCSV(data, [
+                    'id', 'name', 'email', 'phone', 'village', 'skills', 'join_date', 'status'
+                ]);
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                downloadFile(blob, 'volunteers_export.csv', 'text/csv');
+                
+                showSuccess('Volunteer data exported successfully');
+            } catch (error) {
+                console.error('Export error:', error);
+                showError('Error exporting volunteer data. Please try again.');
+            }
+        }
+
+        async function exportAlerts() {
+            try {
+                const response = await fetch('/api/alerts?limit=1000');
+                const data = await response.json();
+                
+                // Convert to CSV
+                const csvContent = convertToCSV(data, [
+                    'id', 'type', 'message', 'severity', 'village', 'created_date', 'status'
+                ]);
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                downloadFile(blob, 'alerts_export.csv', 'text/csv');
+                
+                showSuccess('Alert data exported successfully');
+            } catch (error) {
+                console.error('Export error:', error);
+                showError('Error exporting alert data. Please try again.');
+            }
+        }
+
+        async function previewData(type) {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+            
+            previewSection.style.display = 'block';
+            previewContent.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading preview...</div>';
+            
+            try {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+                
+                let url = `/api/${type}?limit=10`;
+                if (startDate && endDate) {
+                    url += `&start_date=${startDate}&end_date=${endDate}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    previewContent.innerHTML = '<p style="text-align: center; color: #666;">No data found for the selected date range.</p>';
+                    return;
+                }
+                
+                const table = createPreviewTable(data, type);
+                previewContent.innerHTML = table;
+                
+            } catch (error) {
+                console.error('Preview error:', error);
+                previewContent.innerHTML = '<p style="text-align: center; color: #f44336;">Error loading preview. Please try again.</p>';
+            }
+        }
+
+        async function previewVolunteers() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+            
+            previewSection.style.display = 'block';
+            previewContent.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading preview...</div>';
+            
+            try {
+                const response = await fetch('/api/volunteers?limit=10');
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    previewContent.innerHTML = '<p style="text-align: center; color: #666;">No volunteer data found.</p>';
+                    return;
+                }
+                
+                const table = createPreviewTable(data, 'volunteers');
+                previewContent.innerHTML = table;
+                
+            } catch (error) {
+                console.error('Preview error:', error);
+                previewContent.innerHTML = '<p style="text-align: center; color: #f44336;">Error loading preview. Please try again.</p>';
+            }
+        }
+
+        async function previewAlerts() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+            
+            previewSection.style.display = 'block';
+            previewContent.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading preview...</div>';
+            
+            try {
+                const response = await fetch('/api/alerts?limit=10');
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    previewContent.innerHTML = '<p style="text-align: center; color: #666;">No alert data found.</p>';
+                    return;
+                }
+                
+                const table = createPreviewTable(data, 'alerts');
+                previewContent.innerHTML = table;
+                
+            } catch (error) {
+                console.error('Preview error:', error);
+                previewContent.innerHTML = '<p style="text-align: center; color: #f44336;">Error loading preview. Please try again.</p>';
+            }
+        }
+
+        function createPreviewTable(data, type) {
+            let headers = [];
+            let rows = [];
+            
+            if (type === 'cases') {
+                headers = ['Date', 'Village', 'Type', 'Severity', 'Age', 'Gender'];
+                rows = data.map(item => [
+                    new Date(item.reported_date).toLocaleDateString(),
+                    item.village,
+                    item.case_type,
+                    item.severity,
+                    item.age || '-',
+                    item.gender || '-'
+                ]);
+            } else if (type === 'water-quality') {
+                headers = ['Date', 'Village', 'Source', 'pH', 'Bacteria', 'Chlorine', 'Status'];
+                rows = data.map(item => [
+                    new Date(item.test_date).toLocaleDateString(),
+                    item.village,
+                    item.water_source,
+                    item.ph_level || '-',
+                    item.bacteria_count || '-',
+                    item.chlorine_level || '-',
+                    item.status
+                ]);
+            } else if (type === 'volunteers') {
+                headers = ['Name', 'Email', 'Phone', 'Village', 'Join Date', 'Status'];
+                rows = data.map(item => [
+                    item.name,
+                    item.email || '-',
+                    item.phone || '-',
+                    item.village,
+                    new Date(item.join_date).toLocaleDateString(),
+                    item.status
+                ]);
+            } else if (type === 'alerts') {
+                headers = ['Date', 'Type', 'Message', 'Severity', 'Village', 'Status'];
+                rows = data.map(item => [
+                    new Date(item.created_date).toLocaleDateString(),
+                    item.type,
+                    item.message,
+                    item.severity,
+                    item.village || '-',
+                    item.status
+                ]);
+            }
+            
+            let tableHTML = '<div class="report-preview"><table class="preview-table"><thead><tr>';
+            headers.forEach(header => {
+                tableHTML += `<th>${header}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            rows.forEach(row => {
+                tableHTML += '<tr>';
+                row.forEach(cell => {
+                    tableHTML += `<td>${cell}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody></table></div>';
+            return tableHTML;
+        }
+
+        function downloadTemplate(type) {
+            let csvContent = '';
+            
+            if (type === 'cases') {
+                csvContent = 'village,case_type,severity,symptoms,age,gender,contact_info\n' +
+                           'Palampur,Diarrhea,moderate,"Fever, loose stools",25,Male,9876543210\n' +
+                           'Dholakpur,Cholera,high,"Severe dehydration, vomiting",30,Female,9876543211';
+            } else if (type === 'water-quality') {
+                csvContent = 'village,water_source,ph_level,turbidity,bacteria_count,chlorine_level,tester_name,notes\n' +
+                           'Palampur,Well,7.2,1.5,50,0.5,John Doe,Water looks clear\n' +
+                           'Dholakpur,Hand Pump,6.8,2.1,120,0.2,Jane Smith,Some turbidity observed';
+            }
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            downloadFile(blob, `${type}_template.csv`, 'text/csv');
+        }
+
+        function generateSummaryReport(period) {
+            showSuccess(`${period.charAt(0).toUpperCase() + period.slice(1)} summary report generation started. This feature will be available soon.`);
+        }
+
+        function generateVillageReport() {
+            showSuccess('Village-wise report generation started. This feature will be available soon.');
+        }
+
+        function downloadFile(blob, filename, mimeType) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function convertToCSV(data, fields) {
+            const headers = fields.join(',');
+            const rows = data.map(item => 
+                fields.map(field => {
+                    const value = item[field] || '';
+                    return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+                }).join(',')
+            );
+            return [headers, ...rows].join('\n');
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('preview-success');
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('preview-error');
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

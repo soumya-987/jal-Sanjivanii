@@ -13,9 +13,9 @@
             <h1>Jal Sanjivani</h1>
             <ul class="nav-menu">
                 <li><a href="#" class="nav-link active">Dashboard</a></li>
-                <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">Alerts</a></li>
-                <li><a href="#" class="nav-link">Water Points</a></li>
+                <li><a href="reports.html" class="nav-link">Reports</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="data-forms.html" class="nav-link">Data Input</a></li>
                 <li><a href="#" class="nav-link">Resources</a></li>
                 <li><a href="login.html" class="nav-link">Login</a></li>
             </ul>
@@ -37,19 +37,17 @@
             <h2>Current Risk Level</h2>
         </div>
         
-        <div class="risk">
+        <div class="risk" id="risk-card">
             <p class="icon">⚠️</p>
-            <h3>Moderate Risk</h3>
-            <p>5 cases reported in your area this week</p>
-            <button>View Details</button>
+            <h3 id="risk-level">Loading...</h3>
+            <p id="risk-description">Loading risk assessment...</p>
+            <button onclick="window.location.href='analytics.html'">View Details</button>
         </div>
         
         <div class="box2">
             <p class="gha">Nearby Villages</p>
-            <div class="btn">
-                <button class="b1">Palampur (moderate risk)</button>
-                <button class="b2">Dholakpur (high risk)</button>
-                <button class="b3">kuma nagar (no risk)</button>
+            <div class="btn" id="village-buttons">
+                <div class="loading">Loading village data...</div>
             </div>
         </div>
         
@@ -59,7 +57,7 @@
                 <div class="volunteer-text">
                     <h3>Be a Volunteer</h3>
                     <p>Help us monitor water quality and prevent diseases in your community. Your contribution can save lives.</p>
-                    <button class="volunteer-btn">Sign Up Now</button>
+                    <button class="volunteer-btn" onclick="window.location.href='data-forms.html#volunteer-form'">Sign Up Now</button>
                 </div>
                 <div class="volunteer-image">
                     <i class="fas fa-hands-helping"></i>
@@ -74,19 +72,19 @@
                     <p class="emoji">📋</p>
                     <p class="blue">Report Case</p>
                     <p class="red">Report a new suspected case</p>
-                    <button class="nbt">Report Now</button>
+                    <button class="nbt" onclick="window.location.href='data-forms.html#case-form'">Report Now</button>
                 </div>
                 <div class="para2">
                     <p class="emoji">💧</p>
                     <p class="blue">Water Quality</p>
                     <p class="red">Test or report water quality</p>
-                    <button class="nbt">Check Water</button>
+                    <button class="nbt" onclick="window.location.href='data-forms.html#water-form'">Check Water</button>
                 </div>
                 <div class="para3">
                     <p class="emoji">📚</p>
                     <p class="blue">Resources</p>
                     <p class="red">Educational materials</p>
-                    <button class="nbt">View Resources</button>
+                    <button class="nbt" onclick="window.location.href='reports.html'">View Resources</button>
                 </div>
             </div>
         </div>
@@ -106,21 +104,21 @@
         </div>
         <div class="stats-section">
             <h2>Community Impact</h2>
-            <div class="stats-container">
+            <div class="stats-container" id="stats-container">
                 <div class="stat">
-                    <h3>250+</h3>
+                    <h3 id="total-cases">-</h3>
                     <p>Cases Reported</p>
                 </div>
                 <div class="stat">
-                    <h3>120+</h3>
+                    <h3 id="water-points">-</h3>
                     <p>Water Points Monitored</p>
                 </div>
                 <div class="stat">
-                    <h3>75+</h3>
+                    <h3 id="active-volunteers">-</h3>
                     <p>Active Volunteers</p>
                 </div>
                 <div class="stat">
-                    <h3>15</h3>
+                    <h3 id="villages-covered">-</h3>
                     <p>Villages Covered</p>
                 </div>
             </div>
@@ -164,5 +162,195 @@
     </footer>
 
    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Real-time data processing and dashboard updates
+        let socket;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            initializeWebSocket();
+        });
+
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard');
+                const data = await response.json();
+                
+                updateRiskLevel(data);
+                updateVillageData(data);
+                updateStats(data);
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Fallback to static data if API is not available
+                updateRiskLevel({
+                    risk_level: 'moderate',
+                    total_recent_cases: 5,
+                    recent_cases: [
+                        { village: 'Palampur', total_cases: 2 },
+                        { village: 'Dholakpur', total_cases: 3 },
+                        { village: 'Kuma Nagar', total_cases: 0 }
+                    ]
+                });
+            }
+        }
+
+        function updateRiskLevel(data) {
+            const riskLevel = data.risk_level || 'moderate';
+            const totalCases = data.total_recent_cases || 0;
+            
+            const riskCard = document.getElementById('risk-card');
+            const riskLevelElement = document.getElementById('risk-level');
+            const riskDescription = document.getElementById('risk-description');
+            
+            // Update risk level display
+            riskLevelElement.textContent = riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1) + ' Risk';
+            riskDescription.textContent = `${totalCases} cases reported in your area this week`;
+            
+            // Update risk card styling based on level
+            riskCard.className = 'risk';
+            if (riskLevel === 'high' || riskLevel === 'critical') {
+                riskCard.style.background = 'linear-gradient(135deg, #d32f2f 0%, #f44336 100%)';
+            } else if (riskLevel === 'moderate') {
+                riskCard.style.background = 'linear-gradient(135deg, #ff8c00 0%, #ffa240 100%)';
+            } else {
+                riskCard.style.background = 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)';
+            }
+        }
+
+        function updateVillageData(data) {
+            const villageButtons = document.getElementById('village-buttons');
+            const recentCases = data.recent_cases || [];
+            
+            if (recentCases.length === 0) {
+                villageButtons.innerHTML = `
+                    <button class="b1">Palampur (moderate risk)</button>
+                    <button class="b2">Dholakpur (high risk)</button>
+                    <button class="b3">Kuma Nagar (no risk)</button>
+                `;
+                return;
+            }
+            
+            let buttonsHTML = '';
+            recentCases.forEach(village => {
+                let riskLevel = 'no risk';
+                let buttonClass = 'b3';
+                
+                if (village.total_cases > 5) {
+                    riskLevel = 'high risk';
+                    buttonClass = 'b2';
+                } else if (village.total_cases > 0) {
+                    riskLevel = 'moderate risk';
+                    buttonClass = 'b1';
+                }
+                
+                buttonsHTML += `<button class="${buttonClass}" onclick="viewVillageDetails('${village.village}')">${village.village} (${riskLevel})</button>`;
+            });
+            
+            villageButtons.innerHTML = buttonsHTML;
+        }
+
+        function updateStats(data) {
+            document.getElementById('total-cases').textContent = data.total_recent_cases || 0;
+            document.getElementById('water-points').textContent = data.water_tests || 0;
+            document.getElementById('active-volunteers').textContent = data.volunteer_count || 0;
+            document.getElementById('villages-covered').textContent = data.recent_cases ? data.recent_cases.length : 0;
+        }
+
+        function viewVillageDetails(village) {
+            // Navigate to analytics page with village filter
+            window.location.href = `analytics.html?village=${encodeURIComponent(village)}`;
+        }
+
+        function initializeWebSocket() {
+            try {
+                socket = io();
+                
+                socket.on('connect', function() {
+                    console.log('Connected to real-time updates');
+                });
+                
+                socket.on('new_case', function(data) {
+                    console.log('New case reported:', data);
+                    loadDashboardData(); // Refresh dashboard data
+                    showNotification(`New ${data.case_type} case reported in ${data.village}`, 'warning');
+                });
+                
+                socket.on('water_quality_update', function(data) {
+                    console.log('Water quality update:', data);
+                    loadDashboardData(); // Refresh dashboard data
+                    if (data.status === 'contaminated') {
+                        showNotification(`Contaminated water detected in ${data.village}`, 'danger');
+                    }
+                });
+                
+                socket.on('disconnect', function() {
+                    console.log('Disconnected from real-time updates');
+                });
+                
+            } catch (error) {
+                console.log('WebSocket not available, using polling instead');
+                // Fallback to polling every 30 seconds
+                setInterval(loadDashboardData, 30000);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'danger' ? '#f44336' : type === 'warning' ? '#ff9800' : '#4caf50'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 6px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    max-width: 300px;
+                    animation: slideIn 0.3s ease-out;
+                ">
+                    <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Add CSS for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            .loading {
+                text-align: center;
+                color: #666;
+                font-style: italic;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

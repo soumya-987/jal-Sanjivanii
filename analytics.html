@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Jal Sanjivani</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .analytics-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .chart-card h3 {
+            color: #1b5e20;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid #1b5e20;
+        }
+        
+        .stat-card h4 {
+            color: #1b5e20;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .filters {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-group label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+        
+        .apply-filters-btn {
+            background: #1b5e20;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .apply-filters-btn:hover {
+            background: #2e7d32;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #1b5e20;
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+        }
+        
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-low { background: #d4edda; color: #155724; }
+        .status-moderate { background: #fff3cd; color: #856404; }
+        .status-high { background: #f8d7da; color: #721c24; }
+        .status-critical { background: #f5c6cb; color: #721c24; }
+        
+        .status-safe { background: #d4edda; color: #155724; }
+        .status-contaminated { background: #f8d7da; color: #721c24; }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .export-btn {
+            background: #6c757d;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .export-btn:hover {
+            background: #5a6268;
+        }
+        
+        .export-btn.primary {
+            background: #1b5e20;
+        }
+        
+        .export-btn.primary:hover {
+            background: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <h1>Jal Sanjivani</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="data-forms.html" class="nav-link">Data Input</a></li>
+                <li><a href="analytics.html" class="nav-link active">Analytics</a></li>
+                <li><a href="reports.html" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">Alerts</a></li>
+                <li><a href="#" class="nav-link">Water Points</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="analytics-container">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: #1b5e20;">
+            <i class="fas fa-chart-line"></i> Analytics Dashboard
+        </h2>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <h3 style="margin-bottom: 1rem; color: #1b5e20;">
+                <i class="fas fa-filter"></i> Filters
+            </h3>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Village</label>
+                    <select id="village-filter">
+                        <option value="">All Villages</option>
+                        <option value="Palampur">Palampur</option>
+                        <option value="Dholakpur">Dholakpur</option>
+                        <option value="Kuma Nagar">Kuma Nagar</option>
+                        <option value="Guwahati">Guwahati</option>
+                        <option value="Shillong">Shillong</option>
+                        <option value="Imphal">Imphal</option>
+                        <option value="Aizawl">Aizawl</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Time Period</label>
+                    <select id="time-filter">
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                        <option value="365">Last year</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Start Date</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="filter-group">
+                    <label>End Date</label>
+                    <input type="date" id="end-date">
+                </div>
+                <button class="apply-filters-btn" onclick="applyFilters()">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Key Statistics -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <h4 id="total-cases">-</h4>
+                <p>Total Cases</p>
+            </div>
+            <div class="stat-card">
+                <h4 id="high-risk-cases">-</h4>
+                <p>High Risk Cases</p>
+            </div>
+            <div class="stat-card">
+                <h4 id="water-tests">-</h4>
+                <p>Water Tests</p>
+            </div>
+            <div class="stat-card">
+                <h4 id="contaminated-sources">-</h4>
+                <p>Contaminated Sources</p>
+            </div>
+            <div class="stat-card">
+                <h4 id="active-volunteers">-</h4>
+                <p>Active Volunteers</p>
+            </div>
+            <div class="stat-card">
+                <h4 id="risk-level">-</h4>
+                <p>Current Risk Level</p>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="dashboard-grid">
+            <!-- Cases Trend Chart -->
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-line"></i> Cases Trend</h3>
+                <div class="chart-container">
+                    <canvas id="casesTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Case Types Distribution -->
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> Case Types Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="caseTypesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Water Quality Status -->
+            <div class="chart-card">
+                <h3><i class="fas fa-tint"></i> Water Quality Status</h3>
+                <div class="chart-container">
+                    <canvas id="waterQualityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Village-wise Analysis -->
+            <div class="chart-card">
+                <h3><i class="fas fa-map-marker-alt"></i> Village-wise Cases</h3>
+                <div class="chart-container">
+                    <canvas id="villageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tables -->
+        <div class="export-buttons">
+            <button class="export-btn primary" onclick="exportData('cases', 'csv')">
+                <i class="fas fa-download"></i> Export Cases (CSV)
+            </button>
+            <button class="export-btn" onclick="exportData('water-quality', 'csv')">
+                <i class="fas fa-download"></i> Export Water Quality (CSV)
+            </button>
+            <button class="export-btn" onclick="exportData('cases', 'json')">
+                <i class="fas fa-download"></i> Export Cases (JSON)
+            </button>
+        </div>
+
+        <!-- Recent Cases Table -->
+        <div class="data-table">
+            <div class="table-header">
+                <i class="fas fa-table"></i> Recent Cases
+            </div>
+            <div class="table-container">
+                <table id="cases-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Village</th>
+                            <th>Type</th>
+                            <th>Severity</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cases-table-body">
+                        <tr>
+                            <td colspan="7" class="loading">
+                                <i class="fas fa-spinner"></i> Loading data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Water Quality Table -->
+        <div class="data-table" style="margin-top: 2rem;">
+            <div class="table-header">
+                <i class="fas fa-flask"></i> Recent Water Quality Tests
+            </div>
+            <div class="table-container">
+                <table id="water-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Village</th>
+                            <th>Source</th>
+                            <th>pH Level</th>
+                            <th>Bacteria Count</th>
+                            <th>Chlorine</th>
+                            <th>Status</th>
+                            <th>Tester</th>
+                        </tr>
+                    </thead>
+                    <tbody id="water-table-body">
+                        <tr>
+                            <td colspan="8" class="loading">
+                                <i class="fas fa-spinner"></i> Loading data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let charts = {};
+        let currentFilters = {
+            village: '',
+            days: 30,
+            startDate: '',
+            endDate: ''
+        };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultDates();
+            loadDashboardData();
+            initializeCharts();
+        });
+
+        function setDefaultDates() {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+            document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load dashboard overview
+                const dashboardResponse = await fetch('/api/dashboard');
+                const dashboardData = await dashboardResponse.json();
+                
+                updateStats(dashboardData);
+                
+                // Load cases data
+                const casesResponse = await fetch('/api/cases?limit=20');
+                const casesData = await casesResponse.json();
+                updateCasesTable(casesData);
+                
+                // Load water quality data
+                const waterResponse = await fetch('/api/water-quality?limit=20');
+                const waterData = await waterResponse.json();
+                updateWaterTable(waterData);
+                
+                // Load analytics data
+                await loadAnalyticsData();
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function updateStats(data) {
+            document.getElementById('total-cases').textContent = data.total_recent_cases || 0;
+            document.getElementById('high-risk-cases').textContent = data.high_risk_cases || 0;
+            document.getElementById('water-tests').textContent = data.water_tests || 0;
+            document.getElementById('contaminated-sources').textContent = data.water_alerts || 0;
+            document.getElementById('active-volunteers').textContent = data.volunteer_count || 0;
+            document.getElementById('risk-level').textContent = (data.risk_level || 'low').toUpperCase();
+        }
+
+        function updateCasesTable(cases) {
+            const tbody = document.getElementById('cases-table-body');
+            tbody.innerHTML = '';
+            
+            if (cases.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No cases found</td></tr>';
+                return;
+            }
+            
+            cases.forEach(case_ => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(case_.reported_date).toLocaleDateString()}</td>
+                    <td>${case_.village}</td>
+                    <td>${case_.case_type}</td>
+                    <td><span class="status-badge status-${case_.severity}">${case_.severity}</span></td>
+                    <td>${case_.age || '-'}</td>
+                    <td>${case_.gender || '-'}</td>
+                    <td><span class="status-badge status-${case_.status}">${case_.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateWaterTable(waterData) {
+            const tbody = document.getElementById('water-table-body');
+            tbody.innerHTML = '';
+            
+            if (waterData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">No water quality data found</td></tr>';
+                return;
+            }
+            
+            waterData.forEach(test => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(test.test_date).toLocaleDateString()}</td>
+                    <td>${test.village}</td>
+                    <td>${test.water_source}</td>
+                    <td>${test.ph_level || '-'}</td>
+                    <td>${test.bacteria_count || '-'}</td>
+                    <td>${test.chlorine_level || '-'}</td>
+                    <td><span class="status-badge status-${test.status}">${test.status}</span></td>
+                    <td>${test.tester_name || '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function loadAnalyticsData() {
+            try {
+                // Load cases trend
+                const trendResponse = await fetch('/api/analytics/cases-trend?days=' + currentFilters.days);
+                const trendData = await trendResponse.json();
+                updateCasesTrendChart(trendData);
+                
+                // Load water quality summary
+                const waterResponse = await fetch('/api/analytics/water-quality-summary');
+                const waterData = await waterResponse.json();
+                updateWaterQualityChart(waterData);
+                
+                // Load case types distribution
+                const casesResponse = await fetch('/api/cases?limit=100');
+                const casesData = await casesResponse.json();
+                updateCaseTypesChart(casesData);
+                
+                // Update village chart
+                updateVillageChart(casesData);
+                
+            } catch (error) {
+                console.error('Error loading analytics data:', error);
+            }
+        }
+
+        function initializeCharts() {
+            // Cases Trend Chart
+            const casesTrendCtx = document.getElementById('casesTrendChart').getContext('2d');
+            charts.casesTrend = new Chart(casesTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Cases',
+                        data: [],
+                        borderColor: '#1b5e20',
+                        backgroundColor: 'rgba(27, 94, 32, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Case Types Chart
+            const caseTypesCtx = document.getElementById('caseTypesChart').getContext('2d');
+            charts.caseTypes = new Chart(caseTypesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#1b5e20',
+                            '#2e7d32',
+                            '#4caf50',
+                            '#66bb6a',
+                            '#81c784',
+                            '#a5d6a7'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Water Quality Chart
+            const waterQualityCtx = document.getElementById('waterQualityChart').getContext('2d');
+            charts.waterQuality = new Chart(waterQualityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Safe', 'Contaminated'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: ['#4caf50', '#f44336']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Village Chart
+            const villageCtx = document.getElementById('villageChart').getContext('2d');
+            charts.village = new Chart(villageCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Cases',
+                        data: [],
+                        backgroundColor: '#1b5e20'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCasesTrendChart(data) {
+            const labels = data.map(d => new Date(d.date).toLocaleDateString());
+            const caseCounts = data.map(d => d.case_count);
+            
+            charts.casesTrend.data.labels = labels;
+            charts.casesTrend.data.datasets[0].data = caseCounts;
+            charts.casesTrend.update();
+        }
+
+        function updateCaseTypesChart(cases) {
+            const typeCounts = {};
+            cases.forEach(case_ => {
+                typeCounts[case_.case_type] = (typeCounts[case_.case_type] || 0) + 1;
+            });
+            
+            const labels = Object.keys(typeCounts);
+            const data = Object.values(typeCounts);
+            
+            charts.caseTypes.data.labels = labels;
+            charts.caseTypes.data.datasets[0].data = data;
+            charts.caseTypes.update();
+        }
+
+        function updateWaterQualityChart(data) {
+            let safeCount = 0;
+            let contaminatedCount = 0;
+            
+            data.forEach(item => {
+                safeCount += item.total_tests - item.contaminated_count;
+                contaminatedCount += item.contaminated_count;
+            });
+            
+            charts.waterQuality.data.datasets[0].data = [safeCount, contaminatedCount];
+            charts.waterQuality.update();
+        }
+
+        function updateVillageChart(cases) {
+            const villageCounts = {};
+            cases.forEach(case_ => {
+                villageCounts[case_.village] = (villageCounts[case_.village] || 0) + 1;
+            });
+            
+            const labels = Object.keys(villageCounts);
+            const data = Object.values(villageCounts);
+            
+            charts.village.data.labels = labels;
+            charts.village.data.datasets[0].data = data;
+            charts.village.update();
+        }
+
+        function applyFilters() {
+            currentFilters.village = document.getElementById('village-filter').value;
+            currentFilters.days = document.getElementById('time-filter').value;
+            currentFilters.startDate = document.getElementById('start-date').value;
+            currentFilters.endDate = document.getElementById('end-date').value;
+            
+            loadDashboardData();
+        }
+
+        async function exportData(type, format) {
+            try {
+                let url = `/api/export/${type}?format=${format}`;
+                
+                if (currentFilters.startDate && currentFilters.endDate) {
+                    url += `&start_date=${currentFilters.startDate}&end_date=${currentFilters.endDate}`;
+                }
+                
+                const response = await fetch(url);
+                
+                if (format === 'csv') {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `${type}_export.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(downloadUrl);
+                } else {
+                    const data = await response.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `${type}_export.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(downloadUrl);
+                }
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                alert('Error exporting data. Please try again.');
+            }
+        }
+
+        // Real-time updates (if WebSocket is available)
+        if (typeof io !== 'undefined') {
+            const socket = io();
+            
+            socket.on('new_case', function(data) {
+                loadDashboardData(); // Refresh data when new case is reported
+            });
+            
+            socket.on('water_quality_update', function(data) {
+                loadDashboardData(); // Refresh data when water quality is updated
+            });
+        }
+    </script>
+</body>
+</html>
