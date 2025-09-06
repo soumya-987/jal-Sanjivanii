@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Input Forms - Jal Sanjivani</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .form-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #1b5e20;
+            border-bottom-color: #1b5e20;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .upload-section {
+            border: 2px dashed #1b5e20;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .upload-section h3 {
+            color: #1b5e20;
+            margin-bottom: 1rem;
+        }
+        
+        .file-input {
+            margin: 1rem 0;
+        }
+        
+        .file-input input[type="file"] {
+            display: none;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #1b5e20;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .file-input-label:hover {
+            background: #2e7d32;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <h1>Jal Sanjivani</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="data-forms.html" class="nav-link active">Data Input</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="reports.html" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">Alerts</a></li>
+                <li><a href="#" class="nav-link">Water Points</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </button>
+        
+        <div class="form-container">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #1b5e20;">
+                <i class="fas fa-database"></i> Data Input Forms
+            </h2>
+            
+            <div class="form-tabs">
+                <button class="tab-button active" onclick="showTab('case-form')">
+                    <i class="fas fa-user-injured"></i> Report Case
+                </button>
+                <button class="tab-button" onclick="showTab('water-form')">
+                    <i class="fas fa-tint"></i> Water Quality
+                </button>
+                <button class="tab-button" onclick="showTab('volunteer-form')">
+                    <i class="fas fa-hands-helping"></i> Volunteer
+                </button>
+                <button class="tab-button" onclick="showTab('upload-form')">
+                    <i class="fas fa-upload"></i> Bulk Upload
+                </button>
+            </div>
+
+            <!-- Case Reporting Form -->
+            <div id="case-form" class="tab-content active">
+                <div class="success-message" id="case-success"></div>
+                <div class="error-message" id="case-error"></div>
+                
+                <form id="caseReportForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="case-village">Village *</label>
+                            <select id="case-village" name="village" required>
+                                <option value="">Select Village</option>
+                                <option value="Palampur">Palampur</option>
+                                <option value="Dholakpur">Dholakpur</option>
+                                <option value="Kuma Nagar">Kuma Nagar</option>
+                                <option value="Guwahati">Guwahati</option>
+                                <option value="Shillong">Shillong</option>
+                                <option value="Imphal">Imphal</option>
+                                <option value="Aizawl">Aizawl</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="case-type">Case Type *</label>
+                            <select id="case-type" name="case_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Cholera">Cholera</option>
+                                <option value="Diarrhea">Diarrhea</option>
+                                <option value="Typhoid">Typhoid</option>
+                                <option value="Hepatitis A">Hepatitis A</option>
+                                <option value="Dysentery">Dysentery</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="severity">Severity *</label>
+                            <select id="severity" name="severity" required>
+                                <option value="">Select Severity</option>
+                                <option value="low">Low</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" name="age" min="0" max="120">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-info">Contact Info</label>
+                            <input type="text" id="contact-info" name="contact_info" placeholder="Phone number or email">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptoms">Symptoms *</label>
+                        <textarea id="symptoms" name="symptoms" rows="3" required placeholder="Describe the symptoms observed..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="latitude">Latitude (Optional)</label>
+                            <input type="number" id="latitude" name="latitude" step="any" placeholder="e.g., 26.1445">
+                        </div>
+                        <div class="form-group">
+                            <label for="longitude">Longitude (Optional)</label>
+                            <input type="number" id="longitude" name="longitude" step="any" placeholder="e.g., 91.7362">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Case Report
+                    </button>
+                </form>
+            </div>
+
+            <!-- Water Quality Form -->
+            <div id="water-form" class="tab-content">
+                <div class="success-message" id="water-success"></div>
+                <div class="error-message" id="water-error"></div>
+                
+                <form id="waterQualityForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="water-village">Village *</label>
+                            <select id="water-village" name="village" required>
+                                <option value="">Select Village</option>
+                                <option value="Palampur">Palampur</option>
+                                <option value="Dholakpur">Dholakpur</option>
+                                <option value="Kuma Nagar">Kuma Nagar</option>
+                                <option value="Guwahati">Guwahati</option>
+                                <option value="Shillong">Shillong</option>
+                                <option value="Imphal">Imphal</option>
+                                <option value="Aizawl">Aizawl</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="water-source">Water Source *</label>
+                            <select id="water-source" name="water_source" required>
+                                <option value="">Select Source</option>
+                                <option value="Well">Well</option>
+                                <option value="Hand Pump">Hand Pump</option>
+                                <option value="Tube Well">Tube Well</option>
+                                <option value="River">River</option>
+                                <option value="Pond">Pond</option>
+                                <option value="Municipal Supply">Municipal Supply</option>
+                                <option value="Spring">Spring</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ph-level">pH Level *</label>
+                            <input type="number" id="ph-level" name="ph_level" step="0.1" min="0" max="14" required placeholder="e.g., 7.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="turbidity">Turbidity (NTU)</label>
+                            <input type="number" id="turbidity" name="turbidity" step="0.1" min="0" placeholder="e.g., 1.5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bacteria-count">Bacteria Count (per 100ml)</label>
+                            <input type="number" id="bacteria-count" name="bacteria_count" min="0" placeholder="e.g., 50">
+                        </div>
+                        <div class="form-group">
+                            <label for="chlorine-level">Chlorine Level (mg/L)</label>
+                            <input type="number" id="chlorine-level" name="chlorine_level" step="0.1" min="0" placeholder="e.g., 0.5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tester-name">Tester Name *</label>
+                            <input type="text" id="tester-name" name="tester_name" required placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="test-date">Test Date</label>
+                            <input type="datetime-local" id="test-date" name="test_date">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="water-notes">Notes</label>
+                        <textarea id="water-notes" name="notes" rows="3" placeholder="Additional observations or comments..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-flask"></i> Submit Water Quality Data
+                    </button>
+                </form>
+            </div>
+
+            <!-- Volunteer Registration Form -->
+            <div id="volunteer-form" class="tab-content">
+                <div class="success-message" id="volunteer-success"></div>
+                <div class="error-message" id="volunteer-error"></div>
+                
+                <form id="volunteerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="volunteer-name">Full Name *</label>
+                            <input type="text" id="volunteer-name" name="name" required placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="volunteer-email">Email</label>
+                            <input type="email" id="volunteer-email" name="email" placeholder="your.email@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="volunteer-phone">Phone Number *</label>
+                            <input type="tel" id="volunteer-phone" name="phone" required placeholder="+91 9876543210">
+                        </div>
+                        <div class="form-group">
+                            <label for="volunteer-village">Village *</label>
+                            <select id="volunteer-village" name="village" required>
+                                <option value="">Select Village</option>
+                                <option value="Palampur">Palampur</option>
+                                <option value="Dholakpur">Dholakpur</option>
+                                <option value="Kuma Nagar">Kuma Nagar</option>
+                                <option value="Guwahati">Guwahati</option>
+                                <option value="Shillong">Shillong</option>
+                                <option value="Imphal">Imphal</option>
+                                <option value="Aizawl">Aizawl</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="skills">Skills & Interests</label>
+                        <textarea id="skills" name="skills" rows="3" placeholder="Describe your relevant skills, medical background, or areas of interest..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i> Register as Volunteer
+                    </button>
+                </form>
+            </div>
+
+            <!-- Bulk Upload Form -->
+            <div id="upload-form" class="tab-content">
+                <div class="success-message" id="upload-success"></div>
+                <div class="error-message" id="upload-error"></div>
+                
+                <div class="upload-section">
+                    <h3><i class="fas fa-file-csv"></i> Bulk Data Upload</h3>
+                    <p>Upload CSV files to import multiple records at once.</p>
+                    
+                    <form id="bulkUploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="upload-type">Data Type *</label>
+                            <select id="upload-type" name="type" required>
+                                <option value="">Select Data Type</option>
+                                <option value="cases">Case Reports</option>
+                                <option value="water_quality">Water Quality Data</option>
+                            </select>
+                        </div>
+                        
+                        <div class="file-input">
+                            <input type="file" id="csv-file" name="file" accept=".csv" required>
+                            <label for="csv-file" class="file-input-label">
+                                <i class="fas fa-upload"></i> Choose CSV File
+                            </label>
+                            <span id="file-name"></span>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-upload"></i> Upload and Process
+                        </button>
+                    </form>
+                    
+                    <div style="margin-top: 2rem; text-align: left;">
+                        <h4>CSV Format Requirements:</h4>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                            <h5>For Case Reports:</h5>
+                            <p><code>village,case_type,severity,symptoms,age,gender,contact_info</code></p>
+                            
+                            <h5>For Water Quality:</h5>
+                            <p><code>village,water_source,ph_level,turbidity,bacteria_count,chlorine_level,tester_name,notes</code></p>
+                            
+                            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                                <i class="fas fa-info-circle"></i> 
+                                Download sample CSV templates from the Reports section.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // File input handling
+        document.getElementById('csv-file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file selected';
+            document.getElementById('file-name').textContent = fileName;
+        });
+
+        // Form submission handlers
+        document.getElementById('caseReportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await submitForm('/api/cases', new FormData(this), 'case');
+        });
+
+        document.getElementById('waterQualityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await submitForm('/api/water-quality', new FormData(this), 'water');
+        });
+
+        document.getElementById('volunteerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await submitForm('/api/volunteers', new FormData(this), 'volunteer');
+        });
+
+        document.getElementById('bulkUploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await submitForm('/api/upload/csv', new FormData(this), 'upload');
+        });
+
+        // Generic form submission function
+        async function submitForm(url, formData, formType) {
+            const submitBtn = document.querySelector(`#${formType === 'upload' ? 'bulkUploadForm' : formType + (formType === 'water' ? 'Quality' : 'Report') + 'Form'} .submit-btn`);
+            const successMsg = document.getElementById(`${formType}-success`);
+            const errorMsg = document.getElementById(`${formType}-error`);
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    successMsg.textContent = result.message || 'Data submitted successfully!';
+                    successMsg.style.display = 'block';
+                    errorMsg.style.display = 'none';
+                    
+                    // Reset form
+                    document.querySelector(`#${formType === 'upload' ? 'bulkUploadForm' : formType + (formType === 'water' ? 'Quality' : 'Report') + 'Form'}`).reset();
+                    document.getElementById('file-name').textContent = '';
+                } else {
+                    throw new Error(result.error || 'Submission failed');
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                if (formType === 'case') {
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Case Report';
+                } else if (formType === 'water') {
+                    submitBtn.innerHTML = '<i class="fas fa-flask"></i> Submit Water Quality Data';
+                } else if (formType === 'volunteer') {
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Volunteer';
+                } else if (formType === 'upload') {
+                    submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload and Process';
+                }
+            }
+        }
+
+        // Set current date for test date field
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('test-date').value = localDateTime;
+        });
+    </script>
+</body>
+</html>
