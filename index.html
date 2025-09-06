@@ -125,6 +125,14 @@
                 </div>
             </div>
         </div>
+        <!-- Data Processing Section -->
+        <div class="data-section">
+            <h2>Upload Health Data (CSV)</h2>
+            <p>Select a CSV file with columns: village,date,cases</p>
+            <input type="file" id="csvFile" accept=".csv" />
+            <button id="processBtn">Process Data</button>
+            <div id="dataResult" class="data-result"></div>
+        </div>
     </div>
 
     <footer>
@@ -163,6 +171,7 @@
         </div>
     </footer>
 
-   
+    <!-- Scripts -->
+    <script src="script.js"></script>
 </body>
 </html>
