@@ -1,3 +1,45 @@
+# Data Processor Web App
+
+A lightweight Flask app to upload CSV/JSON files, clean them, show a summary, and download the processed CSV.
+
+## Features
+
+- Upload CSV or JSON/JSONL
+- Automatic delimiter detection for CSV; JSON Lines support
+- Trims whitespace in string columns, drops fully empty rows, normalizes column names
+- Displays dataset summary and per-column stats
+- Download cleaned data as CSV
+
+## Requirements
+
+- Python 3.10+
+
+## Setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Run
+
+```bash
+python app.py
+```
+
+Then open http://localhost:5000 in your browser.
+
+## Environment
+
+Optional:
+
+- `FLASK_SECRET_KEY` – set a strong secret for session cookies in production
+
+## Notes
+
+This app stores processed files in `./tmp` and serves them for download. Clean up this directory periodically in long-running deployments.
+
 Jal Sanjivani - Community Health Monitoring System
 Project Overview
 Jal Sanjivani is a comprehensive web-based health monitoring system designed to track and prevent water-borne diseases in rural Northeast India. The platform provides real-time alerts, reporting capabilities, and educational resources for communities.

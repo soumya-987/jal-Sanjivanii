@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Processor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Upload your data</h1>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flash-list">
+            {% for category, message in messages %}
+              <li class="flash flash-{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <form class="card" action="{{ url_for('process') }}" method="post" enctype="multipart/form-data">
+        <label for="data_file">Choose a CSV or JSON file</label>
+        <input id="data_file" name="data_file" type="file" accept=".csv,.json,.jsonl,application/json,text/csv" required />
+        <button type="submit">Process</button>
+      </form>
+
+      <footer>
+        <a href="{{ url_for('healthz') }}" target="_blank" rel="noreferrer">Health check</a>
+      </footer>
+    </main>
+  </body>
+  </html>
+

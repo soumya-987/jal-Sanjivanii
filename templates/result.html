@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Processed Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Processed summary</h1>
+
+      <section class="card">
+        <h2>Dataset</h2>
+        <div class="kv">
+          <div><strong>Rows</strong><span>{{ summary.shape.rows }}</span></div>
+          <div><strong>Columns</strong><span>{{ summary.shape.columns }}</span></div>
+          <div><strong>Memory</strong><span>{{ (summary.memory_bytes / 1024) | round(1) }} KB</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Columns</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Non-null</th>
+                <th>Missing</th>
+                <th>Sample values</th>
+                <th>Numeric stats</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for col in summary.columns %}
+                <tr>
+                  <td>{{ col.name }}</td>
+                  <td><code>{{ col.dtype }}</code></td>
+                  <td>{{ col.non_null }}</td>
+                  <td>{{ col.missing }}</td>
+                  <td class="wrap">{{ col.sample | join(', ') }}</td>
+                  <td class="wrap">
+                    {% if col.stats %}
+                      count={{ col.stats.count }}, mean={{ col.stats.mean }}, std={{ col.stats.std }}, min={{ col.stats.min }}, p25={{ col.stats.p25 }}, p50={{ col.stats.p50 }}, p75={{ col.stats.p75 }}, max={{ col.stats.max }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="actions">
+        <a class="button" href="{{ download_url }}">Download processed CSV</a>
+        <a class="button secondary" href="{{ url_for('index') }}">Process another file</a>
+      </section>
+    </main>
+  </body>
+  </html>
+
