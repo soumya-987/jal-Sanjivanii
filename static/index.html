@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Processor</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Data Processor</h1>
+      <p>Upload a CSV, TSV, or JSON file to get instant insights.</p>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <div id="dropzone" class="dropzone" tabindex="0" aria-label="File dropzone">
+          <input id="fileInput" type="file" accept=".csv,.tsv,.json" />
+          <p>Drag & drop your file here, or click to browse.</p>
+        </div>
+        <button id="uploadBtn" class="primary">Process File</button>
+        <div id="status" class="status"></div>
+      </section>
+
+      <section id="results" class="results hidden">
+        <div class="grid">
+          <div class="card">
+            <h2>Overview</h2>
+            <ul class="meta" id="overview"></ul>
+          </div>
+          <div class="card">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+              <table id="columnsTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Preview (first 50 rows)</h2>
+          <div class="table-wrapper">
+            <table id="previewTable"></table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">Built with FastAPI</footer>
+
+    <script src="/static/script.js" defer></script>
+  </body>
+  </html>
+

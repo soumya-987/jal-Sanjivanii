@@ -60,3 +60,16 @@ Designed for rural communities in Northeast India to combat water-borne diseases
 ![3rd](3rd.png)
 ![4th](4th.png)
 Soumya Jain
+
+---
+
+Data Processor (FastAPI) — Run locally
+
+1. Create venv: `python -m venv .venv && source .venv/bin/activate`
+2. Install deps: `pip install -r requirements.txt`
+3. Start server: `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
+4. Open: `http://localhost:8000`
+
+If you cannot install Python dependencies on your system, you can still use the client-only mode:
+
+- Open `/workspace/static/index.html` directly in your browser. It will parse CSV/TSV/JSON locally and show the same summaries as the server.
